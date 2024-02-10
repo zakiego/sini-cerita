@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const Feeds = ({ stories }: Props) => {
-	const { register, handleSubmit, reset } = useForm();
+	const { register, handleSubmit, reset, formState } = useForm();
 
 	const onSubmit = handleSubmit(async (data) => {
 		await addStory(data.content);
@@ -43,13 +43,19 @@ export const Feeds = ({ stories }: Props) => {
 							rows={2}
 							className="block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
 							placeholder="Sini ceritain masalahnya..."
+							disabled={formState.isSubmitting}
 							{...register("content")}
 						/>
 					</div>
 
 					<div className="absolute inset-x-0 bottom-0 flex justify-end py-2 pl-3 pr-2">
-						<Button color="white" type="submit" className="!text-xs">
-							Sampaikan
+						<Button
+							color="white"
+							type="submit"
+							className="!text-xs"
+							disabled={formState.isSubmitting}
+						>
+							{formState.isSubmitting ? "Loading..." : "Sampaikan"}
 						</Button>
 					</div>
 				</form>
