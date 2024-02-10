@@ -122,12 +122,12 @@ export const Feeds = ({ stories }: Props) => {
                     </time>
                   </div>
                   {!isContentLong && (
-                    <p className="text-sm leading-6 text-gray-500">
+                    <p className="text-sm leading-6 text-gray-500 break-all">
                       {activityItem.content}
                     </p>
                   )}
                   {isContentLong && !isExpandedItem && (
-                    <p className="text-sm leading-6 text-gray-500">
+                    <p className="text-sm leading-6 text-gray-500 break-all">
                       {activityItem.content.slice(0, maxContentLength)} ...{" "}
                       <button
                         type="button"
@@ -139,7 +139,7 @@ export const Feeds = ({ stories }: Props) => {
                     </p>
                   )}
                   {isContentLong && isExpandedItem && (
-                    <p className="text-sm leading-6 text-gray-500">
+                    <p className="text-sm leading-6 text-gray-500 break-all">
                       {activityItem.content}
                     </p>
                   )}
