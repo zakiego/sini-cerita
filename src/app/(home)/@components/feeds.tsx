@@ -23,7 +23,7 @@ export const Feeds = ({ stories }: Props) => {
   const { register, handleSubmit, reset, formState } = useForm({
     resolver: zodResolver(
       z.object({
-        content: z.string().trim().min(1).max(100),
+        content: z.string().trim().min(3).max(100),
       }),
     ),
   });
