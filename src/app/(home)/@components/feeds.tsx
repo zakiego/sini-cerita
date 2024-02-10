@@ -22,13 +22,13 @@ export const Feeds = ({ stories }: Props) => {
   const { register, handleSubmit, reset, formState } = useForm({
     resolver: zodResolver(
       z.object({
-        content: z.string().min(1).max(500),
+        content: z.string().trim().min(1).max(100),
       }),
     ),
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    await addStory(data.content);
+    await addStory(data.content.trim());
     toast.success("Makasih ya udah cerita!");
     reset();
   });

@@ -17,7 +17,7 @@ export default async function Home() {
     timestamp: timestamps[i],
   }));
 
-  const filteredData = data.filter((story) => story.content);
+  const filteredData = data.filter((story) => story.content.trim());
 
   return (
     <LayoutPage>
