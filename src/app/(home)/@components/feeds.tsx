@@ -119,7 +119,7 @@ export const Feeds = ({ stories }: Props) => {
                       className="flex-none py-0.5 text-xs leading-5 text-gray-500"
                       suppressHydrationWarning
                     >
-                      {activityItem.timestamp}
+                      {activityItem.readableTimestamp}
                     </time>
                   </div>
                   {!isContentLong && (

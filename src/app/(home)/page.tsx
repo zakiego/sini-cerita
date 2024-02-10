@@ -18,13 +18,16 @@ export default async function Home() {
     content: z.string(),
     timestamp: z.string(),
   });
-  const parsedData = stories
-    .map((story) => schema.parse(JSON.parse(story)))
-    .map((story) => ({
-      content: story.content,
-      timestamp: story.timestamp,
-      readableTimestamp: formatDateDifference(story.timestamp),
-    }));
+  const parsedData = stories.map((story) => {
+    const data = schema.parse(JSON.parse(story));
+    const readableTimestamp = formatDateDifference(data.timestamp);
+
+    return {
+      content: data.content,
+      timestamp: data.timestamp,
+      readableTimestamp,
+    };
+  });
 
   return (
     <LayoutPage>
