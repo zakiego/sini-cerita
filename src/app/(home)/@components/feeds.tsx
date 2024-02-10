@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/app/components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState } from "react";
 
 interface Props {
   stories: {
@@ -32,6 +33,17 @@ export const Feeds = ({ stories }: Props) => {
     toast.success("Makasih ya udah cerita!");
     reset();
   });
+
+  const maxContentLength = 100;
+  const [isExpanded, setIsExpanded] = useState<boolean[]>(
+    Array(stories.length).fill(false),
+  );
+
+  const toggleExpand = (index: number) => {
+    const newExpanded = [...isExpanded];
+    newExpanded[index] = !newExpanded[index];
+    setIsExpanded(newExpanded);
+  };
 
   return (
     <>
@@ -74,42 +86,68 @@ export const Feeds = ({ stories }: Props) => {
       </div>
 
       <ul className="space-y-6">
-        {stories.map((activityItem, activityItemIdx) => (
-          <li key={activityItem.timestamp} className="relative flex gap-x-4">
-            <div
-              className={clsx(
-                activityItemIdx === stories.length - 1 ? "h-6" : "-bottom-6",
-                "absolute left-0 top-0 flex w-6 justify-center",
-              )}
-            >
-              <div className="w-px bg-gray-200" />
-            </div>
-            <>
-              <Avatar
-                alt=""
-                className="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-100"
-              />
-              <div className="flex-auto rounded-md p-3 ring-1 ring-inset ring-gray-200">
-                <div className="flex justify-between gap-x-4">
-                  <div className="py-0.5 text-xs leading-5 text-gray-500">
-                    <span className="font-medium text-gray-900">Anonim</span>{" "}
-                    commented
-                  </div>
-                  <time
-                    dateTime={activityItem.timestamp}
-                    className="flex-none py-0.5 text-xs leading-5 text-gray-500"
-                    suppressHydrationWarning
-                  >
-                    {formatDateDifference(activityItem.timestamp)}
-                  </time>
-                </div>
-                <p className="text-sm leading-6 text-gray-500">
-                  {activityItem.content}
-                </p>
+        {stories.map((activityItem, activityItemIdx) => {
+          const contentLength = activityItem.content.length;
+          const isContentLong = contentLength > maxContentLength;
+          const isExpandedItem = isExpanded[activityItemIdx];
+          const isLastItem = activityItemIdx === stories.length - 1;
+
+          return (
+            <li key={activityItem.timestamp} className="relative flex gap-x-4">
+              <div
+                className={clsx(
+                  isLastItem ? "h-6" : "-bottom-6",
+                  "absolute left-0 top-0 flex w-6 justify-center",
+                )}
+              >
+                <div className="w-px bg-gray-200" />
               </div>
-            </>
-          </li>
-        ))}
+              <>
+                <Avatar
+                  alt=""
+                  className="relative mt-3 h-6 w-6 flex-none rounded-full bg-gray-100"
+                />
+                <div className="flex-auto rounded-md p-3 ring-1 ring-inset ring-gray-200">
+                  <div className="flex justify-between gap-x-4">
+                    <div className="py-0.5 text-xs leading-5 text-gray-500">
+                      <span className="font-medium text-gray-900">Anonim</span>{" "}
+                      commented
+                    </div>
+                    <time
+                      dateTime={activityItem.timestamp}
+                      className="flex-none py-0.5 text-xs leading-5 text-gray-500"
+                      suppressHydrationWarning
+                    >
+                      {formatDateDifference(activityItem.timestamp)}
+                    </time>
+                  </div>
+                  {!isContentLong && (
+                    <p className="text-sm leading-6 text-gray-500">
+                      {activityItem.content}
+                    </p>
+                  )}
+                  {isContentLong && !isExpandedItem && (
+                    <p className="text-sm leading-6 text-gray-500">
+                      {activityItem.content.slice(0, maxContentLength)} ...{" "}
+                      <button
+                        type="button"
+                        className="text-blue-500"
+                        onClick={() => toggleExpand(activityItemIdx)}
+                      >
+                        baca selengkapnya
+                      </button>
+                    </p>
+                  )}
+                  {isContentLong && isExpandedItem && (
+                    <p className="text-sm leading-6 text-gray-500">
+                      {activityItem.content}
+                    </p>
+                  )}
+                </div>
+              </>
+            </li>
+          );
+        })}
       </ul>
     </>
   );
