@@ -8,6 +8,8 @@ import { Avatar } from "@/app/components/avatar";
 import { addStory } from "@/app/(home)/actions";
 import { useForm } from "react-hook-form";
 import { Button } from "@/app/components/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 interface Props {
   stories: {
@@ -17,7 +19,13 @@ interface Props {
 }
 
 export const Feeds = ({ stories }: Props) => {
-  const { register, handleSubmit, reset, formState } = useForm();
+  const { register, handleSubmit, reset, formState } = useForm({
+    resolver: zodResolver(
+      z.object({
+        content: z.string().min(1).max(500),
+      }),
+    ),
+  });
 
   const onSubmit = handleSubmit(async (data) => {
     await addStory(data.content);
@@ -53,7 +61,11 @@ export const Feeds = ({ stories }: Props) => {
               color="white"
               type="submit"
               className="!text-xs"
-              disabled={formState.isSubmitting}
+              disabled={
+                formState.isSubmitting ||
+                !formState.isDirty ||
+                !formState.isValid
+              }
             >
               {formState.isSubmitting ? "Loading..." : "Sampaikan"}
             </Button>

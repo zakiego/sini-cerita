@@ -17,9 +17,11 @@ export default async function Home() {
     timestamp: timestamps[i],
   }));
 
+  const filteredData = data.filter((story) => story.content);
+
   return (
     <LayoutPage>
-      <Feeds stories={data} />
+      <Feeds stories={filteredData} />
     </LayoutPage>
   );
 }
