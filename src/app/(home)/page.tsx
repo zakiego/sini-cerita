@@ -2,6 +2,7 @@ import { Feeds } from "@/app/(home)/@components/feeds";
 import { LayoutPage } from "@/app/(home)/@components/layout-page";
 import { client } from "@/app/lib/db";
 import { Metadata } from "next";
+import { z } from "zod";
 
 export const metadata: Metadata = {
   title: "Sini Cerita",
@@ -12,19 +13,22 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const stories = await client.lrange("stories", 0, -1);
-  const timestamps = await client.lrange("stories-timestamps", 0, -1);
 
-  const data = stories.map((content, i) => ({
-    content,
-    timestamp: timestamps[i],
-    readableTimestamp: formatDateDifference(timestamps[i]),
-  }));
-
-  const filteredData = data.filter((story) => story.content.trim());
+  const schema = z.object({
+    content: z.string(),
+    timestamp: z.string(),
+  });
+  const parsedData = stories
+    .map((story) => schema.parse(JSON.parse(story)))
+    .map((story) => ({
+      content: story.content,
+      timestamp: story.timestamp,
+      readableTimestamp: formatDateDifference(story.timestamp),
+    }));
 
   return (
     <LayoutPage>
-      <Feeds stories={filteredData} />
+      <Feeds stories={parsedData} />
     </LayoutPage>
   );
 }

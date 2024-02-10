@@ -6,8 +6,12 @@ import { revalidatePath } from "next/cache";
 export const addStory = async (content: string) => {
   const time = new Date().toISOString();
 
-  await client.lpush("stories", content);
-  await client.lpush("stories-timestamps", time);
+  const data = {
+    content,
+    timestamp: time,
+  };
+
+  await client.lpush("stories", JSON.stringify(data));
 
   revalidatePath("/");
 };
