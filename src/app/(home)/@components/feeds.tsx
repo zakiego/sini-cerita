@@ -10,17 +10,37 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/app/components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useOptimistic, useState } from "react";
+import { formatDateDifference } from "@/app/lib/utils";
 
 interface Props {
-  stories: {
-    content: string;
-    timestamp: string;
-    readableTimestamp: string;
-  }[];
+  stories: Stories;
 }
 
+type Stories = {
+  content: string;
+  timestamp: string;
+  readableTimestamp: string;
+}[];
+
 export const Feeds = ({ stories }: Props) => {
+  const [optimisticStories, addOptimisticStory] = useOptimistic(
+    stories,
+    (state: Stories, newStory: string) => {
+      const timestamp = new Date().toISOString();
+      const readableTimestamp = formatDateDifference(timestamp);
+
+      return [
+        {
+          content: newStory,
+          timestamp,
+          readableTimestamp,
+        },
+        ...state,
+      ];
+    },
+  );
+
   const { register, handleSubmit, reset, formState } = useForm({
     resolver: zodResolver(
       z.object({
@@ -30,14 +50,15 @@ export const Feeds = ({ stories }: Props) => {
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    await addStory(data.content.trim());
     toast.success("Makasih ya udah cerita!");
     reset();
+    addOptimisticStory(data.content.trim());
+    await addStory(data.content.trim());
   });
 
   const maxContentLength = 100;
   const [isExpanded, setIsExpanded] = useState<boolean[]>(
-    Array(stories.length).fill(false),
+    Array(optimisticStories.length).fill(false),
   );
 
   const toggleExpand = (index: number) => {
@@ -87,11 +108,11 @@ export const Feeds = ({ stories }: Props) => {
       </div>
 
       <ul className="space-y-6">
-        {stories.map((activityItem, activityItemIdx) => {
+        {optimisticStories.map((activityItem, activityItemIdx) => {
           const contentLength = activityItem.content.length;
           const isContentLong = contentLength > maxContentLength;
           const isExpandedItem = isExpanded[activityItemIdx];
-          const isLastItem = activityItemIdx === stories.length - 1;
+          const isLastItem = activityItemIdx === optimisticStories.length - 1;
 
           return (
             <li key={activityItem.timestamp} className="relative flex gap-x-4">
