@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const stories = await client.lrange("stories", 0, -1);
+  const stories = await client.lrange("stories-dev", 0, -1);
 
   const schema = z.object({
     content: z.string(),
