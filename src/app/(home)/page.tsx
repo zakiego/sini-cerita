@@ -7,7 +7,7 @@ import { z } from "zod";
 
 export const metadata: Metadata = {
   title: "Sini Cerita",
-  description: "Hai, gimana harimu? Ada cerita apa hari ini? 🤗"
+  description: "Hai, gimana harimu? Ada cerita apa hari ini? 🤗",
 };
 
 export const dynamic = "force-dynamic";
@@ -19,16 +19,28 @@ export default async function Home() {
     content: z.string(),
     timestamp: z.string(),
   });
-  const parsedData = stories.map((story) => {
-    const data = schema.parse(JSON.parse(story));
-    const readableTimestamp = formatDateDifference(data.timestamp);
 
-    return {
-      content: data.content,
-      timestamp: data.timestamp,
-      readableTimestamp,
-    };
-  });
+  const checkIsSpamForTemporary = (content: string) => {
+    // includes "Bang request nya masih bisa di batch" or "Aw dada gw sakit"
+    const spamWords = [
+      "Bang request nya masih bisa di batch",
+      "Aw dada gw sakit",
+    ];
+    return spamWords.some((spamWord) => content.includes(spamWord));
+  };
+
+  const parsedData = stories
+    .map((story) => {
+      const data = schema.parse(JSON.parse(story));
+      const readableTimestamp = formatDateDifference(data.timestamp);
+
+      return {
+        content: data.content,
+        timestamp: data.timestamp,
+        readableTimestamp,
+      };
+    })
+    .filter((story) => !checkIsSpamForTemporary(story.content));
 
   return (
     <LayoutPage>
