@@ -7,7 +7,7 @@ import { z } from "zod";
 
 export const metadata: Metadata = {
   title: "Sini Cerita",
-  description: "Sini cerita masalahmu, kamu nggak sendiri",
+  description: "Hai, gimana harimu? Ada cerita apa hari ini? 🤗"
 };
 
 export const dynamic = "force-dynamic";
