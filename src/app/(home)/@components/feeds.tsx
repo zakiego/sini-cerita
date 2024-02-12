@@ -70,7 +70,6 @@ export const Feeds = ({ stories }: Props) => {
   return (
     <>
       <Toaster richColors />
-      ☺️
       <h1 className="text-lg font-semibold text-gray-900 sm:text-xl sm:leading-7 sm:truncate">
         Hai, gimana harimu? Ada cerita apa hari ini? 🤗
       </h1>
