@@ -13,21 +13,27 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const stories = await client.lrange("stories", 0, -1);
+  // stories --> before cleaning
+  // stories-prod --> current stories
+  // stories-backup --> backup stories from stories
+  const stories = await client.lrange("stories-prod", 0, -1);
+
+  // backup to 'stories-prod' but reverse
+  // await client.lpush("stories-prod", ...stories.reverse());
+
+  // delete all stories
+  // await client.ltrim("stories-backup", 0, -1);
+
+  // backup stories
+  // await client.lpush("stories-backup", ...stories);
+
+  // delete from index 131 until 1237
+  // await client.ltrim("stories-backup", 0, 130);
 
   const schema = z.object({
     content: z.string(),
     timestamp: z.string(),
   });
-
-  const checkIsSpamForTemporary = (content: string) => {
-    // includes "Bang request nya masih bisa di batch" or "Aw dada gw sakit"
-    const spamWords = [
-      "Bang request nya masih bisa di batch",
-      "Aw dada gw sakit",
-    ];
-    return spamWords.some((spamWord) => content.includes(spamWord));
-  };
 
   const parsedData = stories
     .map((story) => {
@@ -40,7 +46,9 @@ export default async function Home() {
         readableTimestamp,
       };
     })
-    .filter((story) => !checkIsSpamForTemporary(story.content));
+    .sort((a, b) => {
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
 
   return (
     <LayoutPage>
