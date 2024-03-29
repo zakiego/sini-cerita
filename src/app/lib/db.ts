@@ -8,4 +8,7 @@ const envSchema = z.object({
 
 const env = envSchema.parse(process.env);
 
-export const client = new Redis(env.REDIS_PORT, env.REDIS_HOST);
+export const client = new Redis({
+  port: env.REDIS_PORT,
+  host: env.REDIS_HOST,
+});
