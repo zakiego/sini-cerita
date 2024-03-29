@@ -11,7 +11,7 @@ export const addStory = async (content: string) => {
     timestamp: time,
   };
 
-  await client.lpush("stories", JSON.stringify(data));
+  await client.lpush("stories-prod", JSON.stringify(data));
 
   revalidatePath("/");
 };
